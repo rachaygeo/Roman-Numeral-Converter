@@ -46,8 +46,35 @@ def list_to_str(list):
 
 # roman numerals to number function
 # returns: integer
-def rn_to_num(input):
+def rn_to_num(rn_dict, str):
     num = 0
+
+    if len(str) == 1:
+        num += rn_dict.get(str)
+    else:
+        last_letter = None
+
+        # skips first letter since no previous letter to compare values with
+        skip = True
+        for i, letter in enumerate(str):
+            if not skip:
+                last_value = rn_dict.get(last_letter)
+                this_value = rn_dict.get(letter)
+
+                # if the last value is bigger, no subtraction
+                if last_value >= this_value:
+                    num += last_value
+                    if i == len(str)-1:
+                        num += this_value
+                else:
+                    # if the last value is smaller, then subtract and skip next comparison because this letter will
+                    # become the last letter in the next iteration but it's value has already been added to the total
+                    # value so no need to add it twice
+                    num += this_value - last_value
+                    skip = True
+            else:
+                skip = False
+            last_letter = letter
     return num
 
 
@@ -58,9 +85,9 @@ def main(input):
     try:
         # check if input is a string
         input.isalpha()
-        return rn_to_num(input)
+        return rn_to_num(rn_dict, input)
     except AttributeError:
         return list_to_str(num_to_rn(rn_dict, input))
 
 
-print(main(94))
+print(main("XCIV"))
